@@ -17,8 +17,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
+
+import static com.designCenter.designCenter.constant.CommonConstant.INVALID_FILE_TYPE;
+
 
 @Service
 @Log4j2
@@ -39,7 +41,7 @@ public class UserServiceImpl implements UserService {
                 .name(reqDto.getName())
                 .email(reqDto.getEmail())
                 .gender(reqDto.getGender())
-                .profileImageUrl(fileHandler.saveFile(reqDto.getProfileImage(),reqDto.getName()))
+                .profileImageUrl(setImage(reqDto.getProfileImage(),reqDto.getName()))
                 .postalCode(reqDto.getPostalCode())
                 .mobile(reqDto.getMobile())
                 .password(reqDto.getPassword())
@@ -48,23 +50,21 @@ public class UserServiceImpl implements UserService {
                 .status(ActiveStatus.PENDING)
                 .build();
 
-        log.info("Saving User email:{} by Id:{} ",user.getEmail(),user.getId());
         User savedUser = userRepository.save(user);
+        log.info("Saving User email:{} by Id:{} ",savedUser.getEmail(),savedUser.getId());
         return this.modelMapper.map(savedUser,UserResDto.class);
     }
 
 
 
 
-//    private String setImageUrl(MultipartFile reqFile, String reqName){
-//        String logoFileExtension = StringUtils.getFilenameExtension(reqFile.getOriginalFilename());
-//        assert logoFileExtension != null;
-//        if (logoFileExtension.equalsIgnoreCase("PNG") || logoFileExtension.equalsIgnoreCase("JPG") || logoFileExtension.equalsIgnoreCase("JPEG") || logoFileExtension.equalsIgnoreCase("PDF")) {
-//            String imageUrl = fileHandler.saveFile(reqFile, (reqName + UUID.randomUUID()).replaceAll("[-/+\\s^%@<>!#*.,~$\\\\]", "-"))
-//                    .orElseThrow(() -> new CustomServiceException("Failed to save image to s3 bucket!"));
-//            return imageUrl;
-//        } else {
-//            throw new CustomServiceException("Invalid File Type");
-//        }
-//    }
+    private String setImage(MultipartFile file, String name){
+        String logoFileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        assert logoFileExtension != null;
+        if (logoFileExtension.equalsIgnoreCase("PNG") || logoFileExtension.equalsIgnoreCase("JPG") || logoFileExtension.equalsIgnoreCase("JPEG") || logoFileExtension.equalsIgnoreCase("PDF")) {
+            return fileHandler.uploadToS3Bucket(file, (name+ UUID.randomUUID()).replaceAll("[-/+\\s^%@<>!#*.,~$\\\\]", "-"));
+        } else {
+            throw new CustomServiceException(INVALID_FILE_TYPE);
+        }
+    }
 }
