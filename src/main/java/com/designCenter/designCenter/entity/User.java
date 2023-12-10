@@ -25,6 +25,7 @@ public class User {
     private String postalCode;
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
+    private String profileImageUrl;
     private String email;
     private String password;
     private Date registered;
