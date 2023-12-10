@@ -1,11 +1,10 @@
 package com.designCenter.designCenter.entity;
 
+import com.designCenter.designCenter.enums.ActiveStatus;
+import com.designCenter.designCenter.enums.Gender;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -22,7 +21,14 @@ public class User {
     private Long id;
 
     private String name;
+    private String mobile;
+    private String postalCode;
+    @Enumerated(value = EnumType.STRING)
+    private Gender gender;
     private String email;
     private String password;
     private Date registered;
+    private Date updated;
+    @Enumerated(value = EnumType.STRING)
+    private ActiveStatus status;
 }
