@@ -41,7 +41,6 @@ public class UserServiceImpl implements UserService {
                 .name(reqDto.getName())
                 .email(reqDto.getEmail())
                 .gender(reqDto.getGender())
-                .profileImageUrl(setImage(reqDto.getProfileImage(),reqDto.getName()))
                 .postalCode(reqDto.getPostalCode())
                 .mobile(reqDto.getMobile())
                 .password(reqDto.getPassword())
@@ -49,6 +48,10 @@ public class UserServiceImpl implements UserService {
                 .updated(new Date())
                 .status(ActiveStatus.PENDING)
                 .build();
+
+        if(reqDto.getProfileImage() != null && !reqDto.getProfileImage().isEmpty()){
+            user.setProfileImageUrl(setImage(reqDto.getProfileImage(),reqDto.getName()));
+        }
 
         User savedUser = userRepository.save(user);
         log.info("Saving User email:{} by Id:{} ",savedUser.getEmail(),savedUser.getId());
